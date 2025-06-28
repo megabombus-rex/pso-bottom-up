@@ -8,8 +8,6 @@ import (
 func main() {
 	fmt.Println("Hello world.")
 
-	//min_max_positions := [] swarm.MinMaxPair {{ min: 0.0, max: 1.0 }, {min: -5.0, max: 5.0}}
-
 	min_max_positions := []swarm.MinMaxPair{
 		{Min: 0.0, Max: 1.0},
 		{Min: 0.0, Max: 1.0},
@@ -27,4 +25,7 @@ func main() {
 	}
 
 	fmt.Printf("%+v\n", *particle)
+
+	initial_swarm := swarm.CreateInitialSwarm_GBest(10, 2, min_max_positions, min_max_velocities)
+	fmt.Printf("%+v\n", *initial_swarm)
 }
