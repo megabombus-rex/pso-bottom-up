@@ -2,7 +2,9 @@ package main
 
 import (
 	"PSO/src/swarm"
+	"PSO/src/visualization"
 	"fmt"
+	"os"
 )
 
 func main() {
@@ -28,4 +30,19 @@ func main() {
 
 	initial_swarm := swarm.CreateInitialSwarm_GBest(10, 2, min_max_positions, min_max_velocities)
 	fmt.Printf("%+v\n", *initial_swarm)
+
+	os.MkdirAll("output", 0755)
+
+	particlePositions := [][]float64{
+		{2.5, 3.1},  // Particle 1
+		{-1.2, 0.8}, // Particle 2
+		{0.0, 0.0},  // Global minimum
+		{4.1, -2.3}, // Particle 4
+		{-3.2, 1.5}, // Particle 5
+	}
+
+	heatmap := visualization.CreateHeatmapRastrigin(particlePositions)
+	f1, _ := os.Create("output/rastrigin_heatmap.html")
+	heatmap.Render(f1)
+	f1.Close()
 }
