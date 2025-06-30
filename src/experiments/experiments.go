@@ -19,14 +19,14 @@ func RastriginTestPBest(particleCount int, dimensions int) {
 	}
 
 	// 1. Initialize an array of particles with random positions and velocities on D dimensions,
-	initial_swarm := swarm.CreateInitialSwarm_GBest(particleCount, dimensions, min_max_positions, min_max_velocities)
+	initial_swarm := swarm.CreateInitialSwarm_GBest(particleCount, dimensions, min_max_positions, min_max_velocities, 0.5, 0.5, 0.5)
 	fmt.Printf("%+v\n", *initial_swarm)
 
 	fitnesses := make([]float64, initial_swarm.Size)
 
 	// 2. Evaluate the desired minimization function in D variables
 	for i, particle := range initial_swarm.Particles {
-		fitnesses[i] = rastrigin.Rastrigin_fitness(dimensions, particle.Positions)
+		fitnesses[i] = rastrigin.Rastrigin_fitness(dimensions, particle.Particle.Positions)
 	}
 
 	// 3.  Compare evaluation with particle’s previous best value (PBEST[]):

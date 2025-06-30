@@ -28,7 +28,7 @@ func main() {
 
 	fmt.Printf("%+v\n", *particle)
 
-	initial_swarm := swarm.CreateInitialSwarm_GBest(10, 2, min_max_positions, min_max_velocities)
+	initial_swarm := swarm.CreateInitialSwarm_GBest(10, 2, min_max_positions, min_max_velocities, 0.5, 0.5, 0.5)
 	fmt.Printf("%+v\n", *initial_swarm)
 
 	os.MkdirAll("output", 0755)
