@@ -1,4 +1,4 @@
-package rastrigin
+package problems
 
 import "math"
 

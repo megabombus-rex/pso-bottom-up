@@ -1,23 +1,23 @@
 package experiments
 
 import (
-	rastrigin "PSO/src/problems"
+	"PSO/src/problems"
 	"PSO/src/swarm"
 	"fmt"
 	"math/rand"
 )
 
 // based on the paper
-func RastriginTestPBest(particleCount int, dimensions int, iteration_count int) {
+func RastriginTestPBest(particleCount int, dimensions int, iteration_count int, fitness_function problems.FitnessFunctionPositional) {
 	// swarm parameters
 	min_max_positions := []swarm.MinMaxPair{
-		{Min: -5.0, Max: 5.0},
-		{Min: -5.0, Max: 5.0},
+		{Min: -1.0, Max: 1.0},
+		{Min: -1.0, Max: 1.0},
 	}
 
 	min_max_velocities := []swarm.MinMaxPair{
-		{Min: 0.1, Max: 1.0},
-		{Min: 0.1, Max: 1.0},
+		{Min: 0.1, Max: 0.25},
+		{Min: 0.1, Max: 0.25},
 	}
 
 	personal_learning_rate := 0.4
@@ -35,7 +35,7 @@ func RastriginTestPBest(particleCount int, dimensions int, iteration_count int) 
 	// 2. Evaluate the desired minimization function in D variables
 	// initializing fitness
 	for i, particle := range initial_swarm.Particles {
-		previous_fitnesses[i] = rastrigin.Rastrigin_fitness(dimensions, particle.Particle.Positions)
+		previous_fitnesses[i] = fitness_function(dimensions, particle.Particle.Positions)
 	}
 
 	for i := range iteration_count {
@@ -49,7 +49,8 @@ func RastriginTestPBest(particleCount int, dimensions int, iteration_count int) 
 
 		// new fitness
 		for i, particle := range initial_swarm.Particles {
-			new_fitnesses[i] = rastrigin.Rastrigin_fitness(dimensions, particle.Particle.Positions)
+			new_fitnesses[i] = fitness_function(dimensions, particle.Particle.Positions)
+			fmt.Println("Fitness:", new_fitnesses[i], " for particle in position: ", particle.Particle.Positions)
 		}
 
 		// 3.  Compare evaluation with particle’s previous best value (PBEST[]):
@@ -59,6 +60,7 @@ func RastriginTestPBest(particleCount int, dimensions int, iteration_count int) 
 		for i, particle := range initial_swarm.Particles {
 			if new_fitnesses[i] > previous_fitnesses[i] {
 				particle.Best_value = new_fitnesses[i]
+				fmt.Println("Particle id: ", particle.Particle.Id, " and i: ", i)
 			}
 			if new_fitnesses[i] > initial_swarm.Global_best_p.Best_value {
 				new_particle := swarm.Particle{
@@ -70,7 +72,14 @@ func RastriginTestPBest(particleCount int, dimensions int, iteration_count int) 
 				initial_swarm.Global_best_p = swarm.GBestSwarmParticle{
 					Particle:   new_particle,
 					Best_value: new_fitnesses[i]}
+
+				fmt.Println("Found new best particle in a swarm: ", initial_swarm.Global_best_p.Particle)
 			}
+		}
+
+		// replace old fitnesses with new fitnesses
+		for i := range len(initial_swarm.Particles) {
+			previous_fitnesses[i] = new_fitnesses[i]
 		}
 
 		// 4. Compare evaluation with group’s previous best (PBEST[GBEST]): If current value < PBESTCGBEST] then GBEST=particle’s array index
@@ -81,4 +90,6 @@ func RastriginTestPBest(particleCount int, dimensions int, iteration_count int) 
 
 		// 6. Move to PresentX[][d] + v[][d]: Loop to step 2 and repeat until a criterion is met
 	}
+
+	fmt.Println("After ", iteration_count, " iterations, best value in swarm: ", initial_swarm.Global_best_p.Best_value, " in position: ", initial_swarm.Global_best_p.Particle.Positions)
 }
