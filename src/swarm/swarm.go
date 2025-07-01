@@ -58,12 +58,7 @@ func CalculateNextVelocities(swarm *GBestSwarm, r1 float64, r2 float64) [][]floa
 	return swarm_next_velocities
 }
 
-func CalculateNextPositions(swarm *GBestSwarm, r1 float64, r2 float64) [][]float64 {
-	swarm_next_velocities := CalculateNextVelocities(swarm, r1, r2)
-	if swarm_next_velocities == nil {
-		return nil
-	}
-
+func CalculateNextPositions(swarm *GBestSwarm, r1 float64, r2 float64, swarm_next_velocities [][]float64) [][]float64 {
 	swarm_next_positions := make([][]float64, len(swarm.Particles))
 
 	for i := range swarm.Size {
@@ -78,4 +73,13 @@ func CalculateNextPositions(swarm *GBestSwarm, r1 float64, r2 float64) [][]float
 	}
 
 	return swarm_next_positions
+}
+
+func UpdateSwarmData(swarm *GBestSwarm, new_positions [][]float64, new_velocities [][]float64) {
+	for i, positions := range new_positions {
+		for j := range len(positions) {
+			swarm.Particles[i].Particle.Positions[j] = new_positions[i][j]
+			swarm.Particles[i].Particle.Velocities[j] = new_velocities[i][j]
+		}
+	}
 }
