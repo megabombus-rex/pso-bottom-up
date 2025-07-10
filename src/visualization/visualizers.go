@@ -85,7 +85,7 @@ func Create3DSurface(fitnessFunction problems.FitnessFunctionPositional) *charts
 func CreateHeatmapFunction2D(particlePositions [][]float64, fitnessFunction problems.FitnessFunctionPositional) *charts.HeatMap {
 	heatmap := charts.NewHeatMap()
 	resolution := 100
-	function_name := problems.GetCleanFunctionName(fitnessFunction)
+	functionName := problems.GetCleanFunctionName(fitnessFunction)
 
 	data, xAxis, yAxis := generateContourData(-5.12, 5.12, -5.12, 5.12, resolution, fitnessFunction)
 
@@ -99,7 +99,7 @@ func CreateHeatmapFunction2D(particlePositions [][]float64, fitnessFunction prob
 		}
 	}
 
-	title := "2D " + function_name + " Plot"
+	title := fmt.Sprintf("2D %s Plot", functionName)
 	var calculable bool = true
 
 	var xLabels, yLabels []string
@@ -111,7 +111,7 @@ func CreateHeatmapFunction2D(particlePositions [][]float64, fitnessFunction prob
 	}
 	heatmap.SetGlobalOptions(
 		charts.WithTitleOpts(opts.Title{
-			Title: title, //"2D Rastrigin Function - Contour Plot",
+			Title: title,
 		}),
 		charts.WithXAxisOpts(opts.XAxis{
 			Type: "category",
@@ -127,13 +127,10 @@ func CreateHeatmapFunction2D(particlePositions [][]float64, fitnessFunction prob
 			Min:        0,
 		}),
 	)
-	heatmap.AddSeries(function_name, heatData)
+	heatmap.AddSeries(functionName, heatData)
 
 	var particleData []opts.HeatMapData
 	for _, pos := range particlePositions {
-		// Convert real coordinates to grid indices
-		//xIdx := int((pos[0] + 5.12) / 10.24 * 29)
-		//yIdx := int((pos[1] + 5.12) / 10.24 * 29)
 
 		xIdx := int((pos[0] + 5.12) * float64(resolution) / 10.24)
 		yIdx := int((pos[1] + 5.12) * float64(resolution) / 10.24)

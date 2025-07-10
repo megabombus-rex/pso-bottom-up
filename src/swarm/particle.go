@@ -17,8 +17,8 @@ type MinMaxPair struct {
 	Max float64
 }
 
-func CreateRandomParticle(id int, dimensions int, min_max_positions []MinMaxPair, min_max_velocities []MinMaxPair) (*Particle, error) {
-	if len(min_max_positions) != dimensions || len(min_max_velocities) != dimensions {
+func CreateRandomParticle(id int, dimensions int, minMaxPositions []MinMaxPair, minMaxVelocities []MinMaxPair) (*Particle, error) {
+	if len(minMaxPositions) != dimensions || len(minMaxVelocities) != dimensions {
 		return nil, fmt.Errorf("empty data arrays")
 	}
 
@@ -26,8 +26,8 @@ func CreateRandomParticle(id int, dimensions int, min_max_positions []MinMaxPair
 	velocities := make([]float64, dimensions)
 
 	for i := range dimensions {
-		positions[i] = random_extensions.RandRangeFloat64(min_max_positions[i].Min, min_max_positions[i].Max)
-		velocities[i] = random_extensions.RandRangeFloat64(min_max_velocities[i].Min, min_max_velocities[i].Max)
+		positions[i] = random_extensions.RandRangeFloat64(minMaxPositions[i].Min, minMaxPositions[i].Max)
+		velocities[i] = random_extensions.RandRangeFloat64(minMaxVelocities[i].Min, minMaxVelocities[i].Max)
 	}
 
 	particle := Particle{Id: id, Dimensions: dimensions, Positions: positions, Velocities: velocities}

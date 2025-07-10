@@ -10,7 +10,7 @@ import (
 )
 
 // based on the paper
-func RastriginTestPBest(
+func ExperimentPSOBest(
 	particleCount int, dimensions int, iterationCount int,
 	fitnessFunction problems.FitnessFunctionPositional,
 	minBoundary float64, maxBoundary float64) {
@@ -62,7 +62,6 @@ func RastriginTestPBest(
 		// new fitness
 		for i, particle := range initialSwarm.Particles {
 			newFitnesses[i] = fitnessFunction(dimensions, particle.Particle.Positions)
-			//fmt.Println("Fitness:", new_fitnesses[i], " for particle", particle.Particle.Id, " in position: ", particle.Particle.Positions)
 		}
 
 		// 3.  Compare evaluation with particle’s previous best value (PBEST[]):
@@ -71,21 +70,21 @@ func RastriginTestPBest(
 		// here we maximize
 		for i, particle := range initialSwarm.Particles {
 			if newFitnesses[i] > previousFitnesses[i] {
-				particle.Best_value = newFitnesses[i]
-				fmt.Println("New fitness value for particle: ", particle.Particle.Id, " is ", particle.Best_value)
+				particle.BestValue = newFitnesses[i]
+				fmt.Println("New fitness value for particle: ", particle.Particle.Id, " is ", particle.BestValue)
 			}
-			if newFitnesses[i] > initialSwarm.Global_best_p.Best_value {
+			if newFitnesses[i] > initialSwarm.GlobalBestP.BestValue {
 				new_particle := swarm.Particle{
 					Id:         initialSwarm.Particles[i].Particle.Id,
 					Dimensions: initialSwarm.Particles[i].Particle.Dimensions,
 					Positions:  initialSwarm.Particles[i].Particle.Positions,
 					Velocities: initialSwarm.Particles[i].Particle.Velocities}
 
-				initialSwarm.Global_best_p = swarm.GBestSwarmParticle{
-					Particle:   new_particle,
-					Best_value: newFitnesses[i]}
+				initialSwarm.GlobalBestP = swarm.GBestSwarmParticle{
+					Particle:  new_particle,
+					BestValue: newFitnesses[i]}
 
-				fmt.Println("Found new best particle in a swarm: ", initialSwarm.Global_best_p.Particle)
+				fmt.Println("Found new best particle in a swarm: ", initialSwarm.GlobalBestP.Particle)
 			}
 		}
 
@@ -114,5 +113,5 @@ func RastriginTestPBest(
 		// 6. Move to PresentX[][d] + v[][d]: Loop to step 2 and repeat until a criterion is met
 	}
 
-	fmt.Println("After ", iterationCount, " iterations, best value in swarm: ", initialSwarm.Global_best_p.Best_value, " in position: ", initialSwarm.Global_best_p.Particle.Positions)
+	fmt.Println("After ", iterationCount, " iterations, best value in swarm: ", initialSwarm.GlobalBestP.BestValue, " in position: ", initialSwarm.GlobalBestP.Particle.Positions)
 }
