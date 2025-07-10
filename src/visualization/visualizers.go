@@ -1,7 +1,7 @@
 package visualization
 
 import (
-	rastrigin "PSO/src/problems"
+	"PSO/src/problems"
 	"fmt"
 
 	"github.com/go-echarts/go-echarts/v2/charts"
@@ -9,7 +9,7 @@ import (
 	"github.com/go-echarts/go-echarts/v2/types"
 )
 
-func generateRastriginData(xMin, xMax, yMin, yMax float64, resolution int) []opts.Chart3DData {
+func generateFunctionData(xMin, xMax, yMin, yMax float64, resolution int, fitnessFunction problems.FitnessFunctionPositional) []opts.Chart3DData {
 	var data []opts.Chart3DData
 
 	stepX := (xMax - xMin) / float64(resolution-1)
@@ -19,7 +19,7 @@ func generateRastriginData(xMin, xMax, yMin, yMax float64, resolution int) []opt
 		for j := 0; j < resolution; j++ {
 			x := xMin + float64(i)*stepX
 			y := yMin + float64(j)*stepY
-			z := rastrigin.Rastrigin_fitness(2, []float64{x, y})
+			z := fitnessFunction(2, []float64{x, y})
 
 			data = append(data, opts.Chart3DData{
 				Value: []interface{}{x, y, z},
@@ -30,7 +30,7 @@ func generateRastriginData(xMin, xMax, yMin, yMax float64, resolution int) []opt
 	return data
 }
 
-func generateContourData(xMin, xMax, yMin, yMax float64, resolution int) ([][]float64, []float64, []float64) {
+func generateContourData(xMin, xMax, yMin, yMax float64, resolution int, fitnessFunction problems.FitnessFunctionPositional) ([][]float64, []float64, []float64) {
 	var data [][]float64
 	var xAxis, yAxis []float64
 
@@ -47,7 +47,7 @@ func generateContourData(xMin, xMax, yMin, yMax float64, resolution int) ([][]fl
 		y := yMin + float64(i)*stepY
 		for j := 0; j < resolution; j++ {
 			x := xMin + float64(j)*stepX
-			z := rastrigin.Rastrigin_fitness(2, []float64{x, y})
+			z := fitnessFunction(2, []float64{x, y})
 			row = append(row, z)
 		}
 		data = append(data, row)
@@ -56,15 +56,15 @@ func generateContourData(xMin, xMax, yMin, yMax float64, resolution int) ([][]fl
 	return data, xAxis, yAxis
 }
 
-func Create3DSurface() *charts.Surface3D {
+func Create3DSurface(fitnessFunction problems.FitnessFunctionPositional) *charts.Surface3D {
 	surface3d := charts.NewSurface3D()
 
 	// Generate Rastrigin function data
-	data := generateRastriginData(-5.12, 5.12, -5.12, 5.12, 50)
+	data := generateFunctionData(-5.12, 5.12, -5.12, 5.12, 50, fitnessFunction)
 
 	surface3d.SetGlobalOptions(
 		charts.WithTitleOpts(opts.Title{
-			Title: "2D Rastrigin Function",
+			Title: "2D Rastrigin Function", // not used, not gonna change this
 		}),
 		charts.WithInitializationOpts(opts.Initialization{
 			Theme: types.ThemeWesteros,
@@ -82,10 +82,12 @@ func Create3DSurface() *charts.Surface3D {
 	return surface3d
 }
 
-func CreateHeatmapRastrigin(particlePositions [][]float64) *charts.HeatMap {
+func CreateHeatmapFunction2D(particlePositions [][]float64, fitnessFunction problems.FitnessFunctionPositional) *charts.HeatMap {
 	heatmap := charts.NewHeatMap()
+	resolution := 100
+	function_name := problems.GetCleanFunctionName(fitnessFunction)
 
-	data, xAxis, yAxis := generateContourData(-5.12, 5.12, -5.12, 5.12, 50)
+	data, xAxis, yAxis := generateContourData(-5.12, 5.12, -5.12, 5.12, resolution, fitnessFunction)
 
 	var heatData []opts.HeatMapData
 
@@ -97,6 +99,7 @@ func CreateHeatmapRastrigin(particlePositions [][]float64) *charts.HeatMap {
 		}
 	}
 
+	title := "2D " + function_name + " Plot"
 	var calculable bool = true
 
 	var xLabels, yLabels []string
@@ -108,7 +111,7 @@ func CreateHeatmapRastrigin(particlePositions [][]float64) *charts.HeatMap {
 	}
 	heatmap.SetGlobalOptions(
 		charts.WithTitleOpts(opts.Title{
-			Title: "2D Rastrigin Function - Contour Plot",
+			Title: title, //"2D Rastrigin Function - Contour Plot",
 		}),
 		charts.WithXAxisOpts(opts.XAxis{
 			Type: "category",
@@ -124,27 +127,31 @@ func CreateHeatmapRastrigin(particlePositions [][]float64) *charts.HeatMap {
 			Min:        0,
 		}),
 	)
-	heatmap.AddSeries("Rastrigin", heatData)
+	heatmap.AddSeries(function_name, heatData)
 
 	var particleData []opts.HeatMapData
 	for _, pos := range particlePositions {
 		// Convert real coordinates to grid indices
-		xIdx := int((pos[0] + 5.12) / 10.24 * 29)
-		yIdx := int((pos[1] + 5.12) / 10.24 * 29)
+		//xIdx := int((pos[0] + 5.12) / 10.24 * 29)
+		//yIdx := int((pos[1] + 5.12) / 10.24 * 29)
+
+		xIdx := int((pos[0] + 5.12) * float64(resolution) / 10.24)
+		yIdx := int((pos[1] + 5.12) * float64(resolution) / 10.24)
 
 		if xIdx < 0 {
 			xIdx = 0
 		}
-		if xIdx > 29 {
-			xIdx = 29
+		if xIdx > resolution-1 {
+			xIdx = resolution - 1
 		}
 		if yIdx < 0 {
 			yIdx = 0
 		}
-		if yIdx > 29 {
-			yIdx = 29
+		if yIdx > resolution-1 {
+			yIdx = resolution - 1
 		}
 
+		//fmt.Println("Indexes x and y: ", xIdx, ", ", yIdx)
 		// Add particle as a high-value point to make it visible
 		particleData = append(particleData, opts.HeatMapData{
 			Value: [3]interface{}{xIdx, yIdx, 150},

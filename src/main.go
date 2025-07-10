@@ -47,5 +47,6 @@ func main() {
 	//f1.Close()
 
 	//experiments.RastriginTestPBest(20, 2, 50)
-	experiments.RastriginTestPBest(20, 2, 10, problems.Rastrigin_fitness)
+	experiments.RastriginTestPBest(30, 2, 15, problems.Sphere_fitness, -5.12, 5.12)
+	experiments.RastriginTestPBest(30, 2, 15, problems.Rastrigin_fitness, -5.12, 5.12)
 }

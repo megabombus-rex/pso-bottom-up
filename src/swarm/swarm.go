@@ -39,6 +39,7 @@ func CalculateNextVelocities(swarm *GBestSwarm, r1 float64, r2 float64) [][]floa
 	if swarm.Size < 1 {
 		return nil
 	}
+
 	swarm_next_velocities := make([][]float64, len(swarm.Particles))
 
 	for i := range swarm.Size {
@@ -51,6 +52,7 @@ func CalculateNextVelocities(swarm *GBestSwarm, r1 float64, r2 float64) [][]floa
 			personal_l := swarm.c1_coef * r1 * (particle.Best_value - particle.Particle.Positions[j])
 			global_l := swarm.c2_coef * r2 * (swarm.Global_best_p.Best_value - particle.Particle.Positions[j])
 			val := weighted_v1 + personal_l + global_l
+			fmt.Println("Velocity calculated for particle ", particle.Particle.Id, " in dimension ", j+1, " is ", val)
 			swarm_next_velocities[i][j] = val
 		}
 	}
@@ -70,6 +72,7 @@ func CalculateNextPositions(swarm *GBestSwarm, r1 float64, r2 float64, swarm_nex
 		for j := range len(particle_velocities) {
 			swarm_next_positions[i][j] = swarm.Particles[i].Particle.Positions[j] + particle_velocities[j]
 		}
+		fmt.Println("Particle ", swarm.Particles[i].Particle.Id, " set in position: ", swarm_next_positions[i])
 	}
 
 	return swarm_next_positions
@@ -77,6 +80,7 @@ func CalculateNextPositions(swarm *GBestSwarm, r1 float64, r2 float64, swarm_nex
 
 func UpdateSwarmData(swarm *GBestSwarm, new_positions [][]float64, new_velocities [][]float64) {
 	for i, positions := range new_positions {
+		fmt.Println("For particle: ", swarm.Particles[i].Particle.Id, " setting positions: ", positions)
 		for j := range len(positions) {
 			swarm.Particles[i].Particle.Positions[j] = new_positions[i][j]
 			swarm.Particles[i].Particle.Velocities[j] = new_velocities[i][j]

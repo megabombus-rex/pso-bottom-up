@@ -25,10 +25,13 @@ func CreateRandomParticle(id int, dimensions int, min_max_positions []MinMaxPair
 	positions := make([]float64, dimensions)
 	velocities := make([]float64, dimensions)
 
-	for i := 0; i < dimensions; i++ {
+	for i := range dimensions {
 		positions[i] = random_extensions.RandRangeFloat64(min_max_positions[i].Min, min_max_positions[i].Max)
 		velocities[i] = random_extensions.RandRangeFloat64(min_max_velocities[i].Min, min_max_velocities[i].Max)
 	}
 
-	return &Particle{Id: id, Dimensions: dimensions, Positions: positions, Velocities: velocities}, nil
+	particle := Particle{Id: id, Dimensions: dimensions, Positions: positions, Velocities: velocities}
+	fmt.Println("Particle created: ", particle)
+
+	return &particle, nil
 }
